@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+/* PrimeReact core and theme */
+@import "primereact/resources/themes/lara-light-green/theme.css";
+@import "primereact/resources/primereact.min.css";
+@import "primeicons/primeicons.css";
+
+@layer base {
+  .p-datatable {
+    @apply rounded-3xl overflow-hidden border border-zinc-100 shadow-sm;
+  }
+  
+  .p-datatable .p-datatable-thead > tr > th {
+    @apply bg-zinc-50 text-zinc-500 text-[10px] font-bold uppercase tracking-widest py-4 px-6 border-b border-zinc-100;
+  }
+
+  .p-datatable .p-datatable-tbody > tr > td {
+    @apply py-4 px-6 text-sm text-zinc-900 border-b border-zinc-50;
+  }
+
+  .p-inputtext, .p-dropdown, .p-inputnumber-input, .p-textarea {
+    @apply rounded-xl border-zinc-200 focus:ring-2 focus:ring-[#86efac] focus:border-[#86efac] shadow-none;
+  }
+}

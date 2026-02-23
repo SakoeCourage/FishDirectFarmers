@@ -1,0 +1,5 @@
+{
+  "name": "FishDirect Farmer Portal",
+  "description": "A comprehensive management platform for smallholder fish farmers to list harvests, manage orders, and track customers.",
+  "requestFramePermissions": ["geolocation"]
+}
