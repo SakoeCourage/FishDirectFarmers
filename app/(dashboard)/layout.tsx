@@ -23,8 +23,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   }
 
   return (
-    <div className="flex min-h-screen bg-[#F4F7F6]">
-      <div className="flex w-full max-w-[1600px] mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden border border-zinc-100 relative">
+    <div className="flex min-h-screen bg-white">
+      <div className="flex w-full relative">
         {/* Sidebar - Fixed/Sticky */}
         <div className={cn(
           "h-screen sticky top-0 bg-[#4a907a] z-40 transition-all duration-300",
