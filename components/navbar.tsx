@@ -12,8 +12,8 @@ interface NavbarProps {
 export default function Navbar({ onProfileClick }: NavbarProps) {
   return (
     <nav className="h-20 bg-white px-10 flex items-center justify-between sticky top-0 z-50">
-      <div className="flex-1 max-w-2xl relative group">
-        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400 z-10" />
+      <div className="flex-1 max-w-2xl relative group flex items-center">
+        <Search className="absolute left-4 w-4 h-4 text-zinc-400 z-10" />
         <InputText 
           placeholder="Search..." 
           className="pl-12 pr-12 w-full rounded-xl bg-zinc-50 border-none focus:ring-0 focus:bg-zinc-100 transition-all h-12 text-sm"
