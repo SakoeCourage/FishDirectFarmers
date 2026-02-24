@@ -76,7 +76,7 @@ export default function Sidebar({ activeTab, isCollapsed, setIsCollapsed }: Side
             {menuItems.map((item) => (
               <Link
                 key={item.id}
-                href={`?tab=${item.id}`}
+                href={`/${item.id}`}
                 data-pr-tooltip={isCollapsed ? item.label : ""}
                 className={cn(
                   "sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all relative group",
@@ -106,7 +106,7 @@ export default function Sidebar({ activeTab, isCollapsed, setIsCollapsed }: Side
             {businessItems.map((item) => (
               <Link
                 key={item.id}
-                href={`?tab=${item.id}`}
+                href={`/${item.id}`}
                 data-pr-tooltip={isCollapsed ? item.label : ""}
                 className={cn(
                   "sidebar-item w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all group relative",
