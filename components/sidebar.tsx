@@ -14,7 +14,8 @@ import {
   LogOut,
   Fish,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  ShoppingCart
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { motion } from 'motion/react';
@@ -22,6 +23,7 @@ import { Tooltip } from 'primereact/tooltip';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', id: 'dashboard' },
+  { icon: ShoppingCart, label: 'Orders', id: 'orders' },
   { icon: Package, label: 'Harvests', id: 'harvests' },
   { icon: Users, label: 'Customers', id: 'customers' },
   { icon: LineChart, label: 'Analytics', id: 'analytics' },
