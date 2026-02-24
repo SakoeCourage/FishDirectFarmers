@@ -228,19 +228,20 @@ export function FishDirectDataTable<TData>({
 
       if (!isPageChange) setPagination(nextPagination);
 
-      // Persist in URL
-      if (persistFiltersInUrl) {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set('filters', JSON.stringify(nextFilters));
-        router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-      }
-
       mutation.mutate({ newFilters: nextFilters, newPagination: nextPagination });
       return nextFilters;
     });
-  }, [pagination, persistFiltersInUrl, searchParams, router, pathname, mutation]);
+  }, [pagination, mutation]);
 
-  // --- Event Listeners ---
+  // --- Event Listeners & URL Sync ---
+  useEffect(() => {
+    if (persistFiltersInUrl) {
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('filters', JSON.stringify(filters));
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    }
+  }, [filters, persistFiltersInUrl, router, pathname, searchParams]);
+
   useEffect(() => {
     const handleRefresh = () => refetch();
     const handleReset = () => {
@@ -248,9 +249,6 @@ export function FishDirectDataTable<TData>({
       setFilters(resetFilters);
       setPagination({ page: 1, size: 10 });
       setGlobalSearch('');
-      if (persistFiltersInUrl) {
-        router.replace(pathname, { scroll: false });
-      }
       mutation.mutate({ newFilters: resetFilters, newPagination: { page: 1, size: 10 } });
     };
 
@@ -260,7 +258,7 @@ export function FishDirectDataTable<TData>({
       document.removeEventListener('tableRefreshEvent', handleRefresh);
       document.removeEventListener('tableResetEvent', handleReset);
     };
-  }, [refetch, initialPostData, apiCallType, persistFiltersInUrl, router, pathname, mutation]);
+  }, [refetch, initialPostData, apiCallType, mutation]);
 
   // --- Render Helpers ---
   const renderFilterInput = (filter: FilterParam) => {
@@ -280,7 +278,7 @@ export function FishDirectDataTable<TData>({
       case 'SelectFilter':
         return (
           <Dropdown
-            value={value}
+            value={value ?? null}
             options={filter.args?.options || []}
             onChange={(e) => handleUrlQuery(filter.accessor, e.value)}
             placeholder={filter.label}

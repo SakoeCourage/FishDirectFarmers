@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import AuthFlow from '@/components/auth-flow';
 import Sidebar from '@/components/sidebar';
 import Navbar from '@/components/navbar';
@@ -10,14 +11,17 @@ import HarvestManagement from '@/components/harvest-management';
 import CustomerManagement from '@/components/customer-management';
 import { motion, AnimatePresence } from 'motion/react';
 
-export default function Page() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [activeTab, setActiveTab] = useState('dashboard');
+function DashboardContent() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const activeTab = searchParams.get('tab') || 'dashboard';
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  if (!isAuthenticated) {
-    return <AuthFlow onSuccess={() => setIsAuthenticated(true)} />;
-  }
+  const setActiveTab = (tab: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('tab', tab);
+    router.push(`?${params.toString()}`, { scroll: false });
+  };
 
   const renderContent = () => {
     switch (activeTab) {
@@ -39,11 +43,17 @@ export default function Page() {
 
   return (
     <div className="flex min-h-screen bg-[#F4F7F6]">
-      <div className="flex w-full max-w-[1600px] mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden border border-zinc-100">
-        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      <div className="flex w-full max-w-[1600px] mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden border border-zinc-100 relative">
+        {/* Sidebar - Fixed/Sticky */}
+        <div className="h-screen sticky top-0 bg-[#4a907a] z-40">
+          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        </div>
         
-        <div className="flex-1 flex flex-col min-w-0">
-          <Navbar onProfileClick={() => setIsProfileOpen(true)} />
+        <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+          {/* Navbar - Sticky */}
+          <div className="sticky top-0 z-30 bg-white border-b border-zinc-100">
+            <Navbar onProfileClick={() => setIsProfileOpen(true)} />
+          </div>
           
           <main className="flex-1 p-10 overflow-y-auto bg-white">
             <AnimatePresence mode="wait">
@@ -63,5 +73,19 @@ export default function Page() {
 
       <ProfilePanel isOpen={isProfileOpen} onClose={() => setIsProfileOpen(false)} />
     </div>
+  );
+}
+
+export default function Page() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  if (!isAuthenticated) {
+    return <AuthFlow onSuccess={() => setIsAuthenticated(true)} />;
+  }
+
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen">Loading...</div>}>
+      <DashboardContent />
+    </Suspense>
   );
 }
