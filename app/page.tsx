@@ -10,18 +10,14 @@ import DashboardHome from '@/components/dashboard-home';
 import HarvestManagement from '@/components/harvest-management';
 import CustomerManagement from '@/components/customer-management';
 import { motion, AnimatePresence } from 'motion/react';
+import { cn } from '@/lib/utils';
 
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const activeTab = searchParams.get('tab') || 'dashboard';
   const [isProfileOpen, setIsProfileOpen] = useState(false);
-
-  const setActiveTab = (tab: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', tab);
-    router.push(`?${params.toString()}`, { scroll: false });
-  };
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -45,8 +41,15 @@ function DashboardContent() {
     <div className="flex min-h-screen bg-[#F4F7F6]">
       <div className="flex w-full max-w-[1600px] mx-auto bg-white rounded-[40px] shadow-2xl overflow-hidden border border-zinc-100 relative">
         {/* Sidebar - Fixed/Sticky */}
-        <div className="h-screen sticky top-0 bg-[#4a907a] z-40">
-          <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+        <div className={cn(
+          "h-screen sticky top-0 bg-[#4a907a] z-40 transition-all duration-300",
+          isSidebarCollapsed ? "w-20" : "w-64"
+        )}>
+          <Sidebar 
+            activeTab={activeTab} 
+            isCollapsed={isSidebarCollapsed} 
+            setIsCollapsed={setIsSidebarCollapsed} 
+          />
         </div>
         
         <div className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
@@ -55,7 +58,7 @@ function DashboardContent() {
             <Navbar onProfileClick={() => setIsProfileOpen(true)} />
           </div>
           
-          <main className="flex-1 p-10 overflow-y-auto bg-white">
+          <main className="flex-1 p-10 overflow-y-auto bg-white no-scrollbar">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeTab}
