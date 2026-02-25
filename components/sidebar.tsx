@@ -31,6 +31,7 @@ const menuItems = [
 ];
 
 const businessItems = [
+  { icon: Store, label: 'Marketplace', id: 'marketplace' },
   { icon: Store, label: 'My Store', id: 'store' },
   { icon: MapPin, label: 'Farm Location', id: 'location' },
   { icon: MessageSquare, label: 'Chat', id: 'chat', badge: true },
@@ -40,9 +41,10 @@ interface SidebarProps {
   activeTab: string;
   isCollapsed: boolean;
   setIsCollapsed: (collapsed: boolean) => void;
+  onLogout: () => void;
 }
 
-export default function Sidebar({ activeTab, isCollapsed, setIsCollapsed }: SidebarProps) {
+export default function Sidebar({ activeTab, isCollapsed, setIsCollapsed, onLogout }: SidebarProps) {
   return (
     <div className={cn(
       "h-full bg-[#4a907a] flex flex-col transition-all duration-300 relative",
@@ -140,10 +142,13 @@ export default function Sidebar({ activeTab, isCollapsed, setIsCollapsed }: Side
         </div>
       </div>
 
-      <button className={cn(
-        "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-all mt-auto",
-        isCollapsed && "justify-center"
-      )}>
+      <button 
+        onClick={onLogout}
+        className={cn(
+          "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium text-white/70 hover:text-white hover:bg-white/5 transition-all mt-auto",
+          isCollapsed && "justify-center"
+        )}
+      >
         <LogOut className="w-5 h-5 shrink-0" />
         {!isCollapsed && <span>Logout</span>}
       </button>

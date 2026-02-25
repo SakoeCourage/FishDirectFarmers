@@ -22,3 +22,24 @@ export const harvestSchema = z.object({
 export type LoginFormValues = z.infer<typeof loginSchema>;
 export type OtpFormValues = z.infer<typeof otpSchema>;
 export type HarvestFormValues = z.infer<typeof harvestSchema>;
+
+export const marketplaceItemSchema = z.object({
+  name: z.string().min(2, "Product name is required"),
+  category: z.string().min(1, "Category is required"),
+  quantity: z.number().min(1, "Quantity must be at least 1"),
+  unit: z.string().min(1, "Unit is required"),
+  price: z.number().min(0.01, "Price must be greater than 0"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
+  image: z.any().optional(),
+});
+
+export type MarketplaceItemFormValues = z.infer<typeof marketplaceItemSchema>;
+
+export const postToMarketplaceSchema = z.object({
+  harvestId: z.number({ required_error: "Please select a harvest batch" }),
+  quantity: z.number().min(0.1, "Quantity must be greater than 0"),
+  price: z.number().min(0.01, "Price must be greater than 0"),
+  image: z.any().optional(),
+});
+
+export type PostToMarketplaceFormValues = z.infer<typeof postToMarketplaceSchema>;

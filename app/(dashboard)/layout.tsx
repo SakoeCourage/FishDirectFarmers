@@ -34,6 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             activeTab={activeTab} 
             isCollapsed={isSidebarCollapsed} 
             setIsCollapsed={setIsSidebarCollapsed} 
+            onLogout={() => setIsAuthenticated(false)}
           />
         </div>
         

@@ -6,7 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, otpSchema, type LoginFormValues, type OtpFormValues } from '@/lib/schemas';
 import { Button, Card } from '@/components/form-elements';
 import { motion, AnimatePresence } from 'motion/react';
-import { Fish, ArrowRight, ShieldCheck } from 'lucide-react';
+import { Fish, ArrowRight, ShieldCheck, AlertCircle } from 'lucide-react';
 import { InputText } from 'primereact/inputtext';
 import { Controller } from 'react-hook-form';
 import { cn } from '@/lib/utils';
@@ -18,6 +18,9 @@ interface AuthFlowProps {
 export default function AuthFlow({ onSuccess }: AuthFlowProps) {
   const [step, setStep] = useState<'login' | 'otp'>('login');
   const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const loginForm = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -35,14 +38,26 @@ export default function AuthFlow({ onSuccess }: AuthFlowProps) {
   });
 
   const onLoginSubmit = (data: LoginFormValues) => {
-    console.log('Login attempt:', data);
+    setError(null);
     setEmail(data.email);
+    setPassword(data.password);
     setStep('otp');
   };
 
-  const onOtpSubmit = (data: OtpFormValues) => {
-    console.log('OTP verification:', data);
-    onSuccess();
+  const onOtpSubmit = async (data: OtpFormValues) => {
+    setIsLoading(true);
+    setError(null);
+    
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    if (email === "farmer@example.com" && password === "password") {
+      onSuccess();
+    } else {
+      setError("Invalid credentials. Please use farmer@example.com / password");
+      setStep('login');
+    }
+    setIsLoading(false);
   };
 
   return (
@@ -64,6 +79,13 @@ export default function AuthFlow({ onSuccess }: AuthFlowProps) {
                 <h1 className="text-2xl font-bold">Foodaily Farmer</h1>
                 <p className="text-zinc-500 text-sm mt-1">Sign in to manage your harvests</p>
               </div>
+
+              {error && (
+                <div className="mb-6 p-4 bg-red-50 border border-red-100 rounded-xl flex items-center gap-3 text-red-600 text-sm">
+                  <AlertCircle className="w-4 h-4 shrink-0" />
+                  <p>{error}</p>
+                </div>
+              )}
 
               <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
                 <div className="flex flex-col gap-2">
@@ -146,8 +168,12 @@ export default function AuthFlow({ onSuccess }: AuthFlowProps) {
                   {otpForm.formState.errors.otp && <small className="p-error text-center">{otpForm.formState.errors.otp.message}</small>}
                 </div>
                 <div className="space-y-3">
-                  <Button type="submit" className="w-full h-12 text-base bg-[#4a907a] border-none rounded-xl text-white hover:bg-[#3d7a66]">
-                    Verify & Login
+                  <Button 
+                    type="submit" 
+                    disabled={isLoading}
+                    className="w-full h-12 text-base bg-[#4a907a] border-none rounded-xl text-white hover:bg-[#3d7a66]"
+                  >
+                    {isLoading ? "Verifying..." : "Verify & Login"}
                   </Button>
                   <Button
                     type="button"
