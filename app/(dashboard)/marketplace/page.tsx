@@ -22,7 +22,10 @@ import {
   Download,
   Minus,
   Eye,
-  Filter
+  Filter,
+  ChevronRight,
+  ChevronLeft,
+  Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { cn } from '@/lib/utils';
@@ -66,6 +69,7 @@ export default function MarketplacePage() {
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
   const [speciesFilter, setSpeciesFilter] = useState<string | null>(null);
+  const [currentStep, setCurrentStep] = useState(1);
   const toast = useRef<Toast>(null);
   const dt = useRef<DataTable<any>>(null);
 
@@ -115,6 +119,7 @@ export default function MarketplacePage() {
     setPreviewImage(null);
     setEditingItem(null);
     setSpeciesFilter(null);
+    setCurrentStep(1);
   }, [reset]);
 
   const onSubmit = React.useCallback((data: PostToMarketplaceFormValues) => {
@@ -381,71 +386,123 @@ export default function MarketplacePage() {
         onClose={closeModal} 
         title="Post Harvest to Marketplace"
       >
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <label className="text-sm font-medium text-zinc-700">Select Harvest Batch</label>
-              <div className="flex items-center gap-2">
-                <Filter className="w-3 h-3 text-zinc-400" />
-                <Select 
-                  options={[
-                    { label: 'All Species', value: '' },
-                    { label: 'Catfish', value: 'Catfish' },
-                    { label: 'Tilapia', value: 'Tilapia' }
-                  ]}
-                  value={speciesFilter || ''}
-                  onChange={(e) => setSpeciesFilter(e.target.value)}
-                  className="h-8 text-[10px] min-w-[120px]"
-                />
+        <div className="mb-8">
+          <div className="flex items-center justify-between relative">
+            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-zinc-100 -translate-y-1/2 z-0" />
+            {[1, 2, 3].map((s) => (
+              <div key={s} className="relative z-10 flex flex-col items-center gap-2">
+                <div className={cn(
+                  "w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300",
+                  currentStep === s ? "bg-[#4a907a] text-white ring-4 ring-[#4a907a]/10" : 
+                  currentStep > s ? "bg-emerald-500 text-white" : "bg-white border-2 border-zinc-200 text-zinc-400"
+                )}>
+                  {currentStep > s ? <Check className="w-4 h-4" /> : s}
+                </div>
+                <span className={cn(
+                  "text-[10px] font-bold uppercase tracking-wider",
+                  currentStep === s ? "text-[#4a907a]" : "text-zinc-400"
+                )}>
+                  {s === 1 ? 'Select Batch' : s === 2 ? 'Pricing' : 'Review'}
+                </span>
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
 
-            <div className="grid grid-cols-1 gap-3 max-h-[200px] overflow-y-auto pr-2 no-scrollbar">
-              {filteredHarvests.map((harvest) => (
-                <div 
-                  key={harvest.id}
-                  onClick={() => {
-                    setValue('harvestId', harvest.id);
-                    setValue('price', harvest.price);
-                  }}
-                  className={cn(
-                    "p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group",
-                    selectedHarvestId === harvest.id 
-                      ? "bg-[#4a907a]/5 border-[#4a907a] shadow-sm" 
-                      : "bg-white border-zinc-100 hover:border-zinc-200"
-                  )}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={cn(
-                      "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
-                      selectedHarvestId === harvest.id ? "bg-[#4a907a] text-white" : "bg-zinc-50 text-zinc-400 group-hover:bg-zinc-100"
-                    )}>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          <AnimatePresence mode="wait">
+            {currentStep === 1 && (
+              <motion.div 
+                key="step1"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-4"
+              >
+                <div className="flex items-center justify-between">
+                  <label className="text-sm font-medium text-zinc-700">Select Harvest Batch</label>
+                  <div className="flex items-center gap-2">
+                    <Filter className="w-3 h-3 text-zinc-400" />
+                    <Select 
+                      options={[
+                        { label: 'All Species', value: '' },
+                        { label: 'Catfish', value: 'Catfish' },
+                        { label: 'Tilapia', value: 'Tilapia' }
+                      ]}
+                      value={speciesFilter || ''}
+                      onChange={(e) => setSpeciesFilter(e.target.value)}
+                      className="h-8 text-[10px] min-w-[120px]"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-3 max-h-[300px] overflow-y-auto pr-2 no-scrollbar">
+                  {filteredHarvests.map((harvest) => (
+                    <div 
+                      key={harvest.id}
+                      onClick={() => {
+                        setValue('harvestId', harvest.id);
+                        setValue('price', harvest.price);
+                      }}
+                      className={cn(
+                        "p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between group",
+                        selectedHarvestId === harvest.id 
+                          ? "bg-[#4a907a]/5 border-[#4a907a] shadow-sm" 
+                          : "bg-white border-zinc-100 hover:border-zinc-200"
+                      )}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "w-10 h-10 rounded-xl flex items-center justify-center transition-colors",
+                          selectedHarvestId === harvest.id ? "bg-[#4a907a] text-white" : "bg-zinc-50 text-zinc-400 group-hover:bg-zinc-100"
+                        )}>
+                          <Package className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-zinc-900">{harvest.species} Batch #{harvest.id}</p>
+                          <p className="text-[10px] text-zinc-500 font-medium">{harvest.location} • {harvest.date}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-zinc-900">{harvest.weight} {harvest.unit}</p>
+                        <p className="text-[10px] text-zinc-400 font-medium">Available</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                {errors.harvestId && <p className="text-xs text-red-500">{errors.harvestId.message}</p>}
+              </motion.div>
+            )}
+
+            {currentStep === 2 && selectedHarvest && (
+              <motion.div 
+                key="step2"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
+                <div className="p-4 bg-zinc-50 rounded-2xl border border-zinc-100 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-white border border-zinc-200 flex items-center justify-center text-[#4a907a]">
                       <Package className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-zinc-900">{harvest.species} Batch #{harvest.id}</p>
-                      <p className="text-[10px] text-zinc-500 font-medium">{harvest.location} • {harvest.date}</p>
+                      <p className="text-xs font-bold text-zinc-900">{selectedHarvest.species} Batch #{selectedHarvest.id}</p>
+                      <p className="text-[10px] text-zinc-500">{selectedHarvest.location}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-sm font-bold text-zinc-900">{harvest.weight} {harvest.unit}</p>
-                    <p className="text-[10px] text-zinc-400 font-medium">Available</p>
-                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="h-8 text-[10px]"
+                    onClick={() => setCurrentStep(1)}
+                  >
+                    Change
+                  </Button>
                 </div>
-              ))}
-            </div>
-            {errors.harvestId && <p className="text-xs text-red-500">{errors.harvestId.message}</p>}
-          </div>
 
-          <AnimatePresence>
-            {selectedHarvest && (
-              <motion.div 
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                className="space-y-6 pt-4 border-t border-dashed border-zinc-100"
-              >
-                <div className="grid grid-cols-2 gap-6">
+                <div className="grid grid-cols-1 gap-6">
                   <Input 
                     label={`Quantity to Post (${selectedHarvest.unit})`}
                     type="number"
@@ -464,10 +521,28 @@ export default function MarketplacePage() {
                   />
                 </div>
 
+                <div className="flex items-center gap-3 p-4 bg-amber-50 rounded-2xl border border-amber-100">
+                  <AlertCircle className="w-5 h-5 text-amber-500 shrink-0" />
+                  <p className="text-[11px] text-amber-700 leading-relaxed">
+                    You are listing <strong>{watch('quantity') || 0} {selectedHarvest.unit}</strong>. 
+                    Remaining stock in this batch will be <strong>{(selectedHarvest.weight - (watch('quantity') || 0)).toFixed(1)} {selectedHarvest.unit}</strong>.
+                  </p>
+                </div>
+              </motion.div>
+            )}
+
+            {currentStep === 3 && selectedHarvest && (
+              <motion.div 
+                key="step3"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="space-y-6"
+              >
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-zinc-700">Product Image</label>
                   <div className="flex items-center gap-4">
-                    <div className="relative w-24 h-24 rounded-2xl bg-zinc-50 border-2 border-dashed border-zinc-200 flex items-center justify-center overflow-hidden group">
+                    <div className="relative w-32 h-32 rounded-3xl bg-zinc-50 border-2 border-dashed border-zinc-200 flex items-center justify-center overflow-hidden group">
                       {previewImage ? (
                         <Image 
                           src={previewImage} 
@@ -477,7 +552,7 @@ export default function MarketplacePage() {
                           referrerPolicy="no-referrer"
                         />
                       ) : (
-                        <ImageIcon className="w-6 h-6 text-zinc-300" />
+                        <ImageIcon className="w-8 h-8 text-zinc-300" />
                       )}
                       <input 
                         type="file" 
@@ -487,13 +562,13 @@ export default function MarketplacePage() {
                       />
                     </div>
                     <div className="flex-1">
-                      <p className="text-xs font-medium text-zinc-900">Upload product photo</p>
-                      <p className="text-[10px] text-zinc-500 mt-1">PNG, JPG or WEBP. Max 5MB.</p>
+                      <p className="text-xs font-bold text-zinc-900">Upload product photo</p>
+                      <p className="text-[10px] text-zinc-500 mt-1">Showcase your harvest to attract more buyers.</p>
                       <Button 
                         type="button" 
                         variant="outline" 
                         size="sm" 
-                        className="mt-2 h-8 text-[10px] relative"
+                        className="mt-3 h-9 text-[10px] relative rounded-xl"
                       >
                         Choose File
                         <input 
@@ -507,33 +582,66 @@ export default function MarketplacePage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
-                  <p className="text-[11px] text-emerald-700 leading-relaxed">
-                    Posting <strong>{watch('quantity') || 0} {selectedHarvest.unit}</strong> of <strong>{selectedHarvest.species}</strong>. 
-                    Remaining harvest stock will be <strong>{(selectedHarvest.weight - (watch('quantity') || 0)).toFixed(1)} {selectedHarvest.unit}</strong>.
-                  </p>
+                <div className="p-6 bg-[#4a907a]/5 rounded-3xl border border-[#4a907a]/10 space-y-4">
+                  <h4 className="text-xs font-bold text-[#4a907a] uppercase tracking-wider">Listing Summary</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-[10px] text-zinc-400 uppercase font-bold">Product</p>
+                      <p className="text-sm font-bold text-zinc-900">{selectedHarvest.species}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-zinc-400 uppercase font-bold">Batch</p>
+                      <p className="text-sm font-bold text-zinc-900">#{selectedHarvest.id}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-zinc-400 uppercase font-bold">Quantity</p>
+                      <p className="text-sm font-bold text-zinc-900">{watch('quantity')} {selectedHarvest.unit}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] text-zinc-400 uppercase font-bold">Unit Price</p>
+                      <p className="text-sm font-bold text-zinc-900">GH₵ {watch('price')?.toFixed(2)}</p>
+                    </div>
+                  </div>
+                  <div className="pt-4 border-t border-[#4a907a]/10 flex items-center justify-between">
+                    <p className="text-xs font-bold text-zinc-900">Total Value</p>
+                    <p className="text-lg font-black text-[#4a907a]">GH₵ {(watch('quantity') * watch('price') || 0).toFixed(2)}</p>
+                  </div>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
           <div className="flex gap-4 pt-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              className="flex-1 h-12 rounded-xl"
-              onClick={closeModal}
-            >
-              Cancel
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={!selectedHarvest}
-              className="flex-1 h-12 bg-[#4a907a] text-white hover:bg-[#3d7a66] rounded-xl disabled:opacity-50"
-            >
-              Post to Marketplace
-            </Button>
+            {currentStep > 1 && (
+              <Button 
+                type="button" 
+                variant="outline" 
+                className="flex-1 h-12 rounded-xl"
+                onClick={() => setCurrentStep(prev => prev - 1)}
+              >
+                <ChevronLeft className="w-4 h-4 mr-2" />
+                Back
+              </Button>
+            )}
+            
+            {currentStep < 3 ? (
+              <Button 
+                type="button" 
+                disabled={currentStep === 1 && !selectedHarvestId}
+                className="flex-1 h-12 bg-[#4a907a] text-white hover:bg-[#3d7a66] rounded-xl disabled:opacity-50"
+                onClick={() => setCurrentStep(prev => prev + 1)}
+              >
+                Next Step
+                <ChevronRight className="w-4 h-4 ml-2" />
+              </Button>
+            ) : (
+              <Button 
+                type="submit" 
+                className="flex-1 h-12 bg-[#4a907a] text-white hover:bg-[#3d7a66] rounded-xl shadow-lg shadow-[#4a907a]/20"
+              >
+                Publish Listing
+              </Button>
+            )}
           </div>
         </form>
       </Modal>
