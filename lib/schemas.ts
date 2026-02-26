@@ -36,7 +36,7 @@ export const marketplaceItemSchema = z.object({
 export type MarketplaceItemFormValues = z.infer<typeof marketplaceItemSchema>;
 
 export const postToMarketplaceSchema = z.object({
-  harvestId: z.number({ required_error: "Please select a harvest batch" }),
+  harvestId: z.number({ message: "Please select a harvest batch" }),
   quantity: z.number().min(0.1, "Quantity must be greater than 0"),
   price: z.number().min(0.01, "Price must be greater than 0"),
   image: z.any().optional(),
