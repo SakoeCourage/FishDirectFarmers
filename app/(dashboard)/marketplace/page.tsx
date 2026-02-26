@@ -62,7 +62,7 @@ export default function MarketplacePage() {
   const [editingItem, setEditingItem] = useState<any>(null);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [globalFilterValue, setGlobalFilterValue] = useState('');
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<any>({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   });
   const [speciesFilter, setSpeciesFilter] = useState<string | null>(null);
